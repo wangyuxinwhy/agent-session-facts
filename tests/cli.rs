@@ -21,11 +21,25 @@ fn help_discovers_the_session_inspection_workflow() {
     assert!(stdout.contains("cache-read, cache-write, and reasoning breakdowns"));
     assert!(stdout.contains("tool calls"));
     assert!(stdout.contains("source coverage"));
+    assert!(!stdout.contains("  help     Print this message"));
     assert!(
         stdout.contains(
             "agent-session-facts session inspect --runtime <codex|pi|claude> ARTIFACT..."
         )
     );
+}
+
+#[test]
+fn redundant_help_subcommands_are_disabled() {
+    for args in [["help"].as_slice(), ["session", "help"].as_slice()] {
+        let output = binary().args(args).output().expect("CLI should start");
+        assert_eq!(output.status.code(), Some(2));
+        assert!(output.stdout.is_empty());
+        let error: Value =
+            serde_json::from_slice(&output.stderr).expect("stderr should be structured JSON");
+        assert_eq!(error["type"], "agent_session_facts.error");
+        assert_eq!(error["category"], "invalid_input");
+    }
 }
 
 #[test]
