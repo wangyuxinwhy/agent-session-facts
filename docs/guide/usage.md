@@ -4,16 +4,16 @@ description: Inspect Codex, Pi, and Claude Code Session artifacts with agent-ses
 
 # Usage
 
-Choose the runtime adapter, then supply the native JSONL files that belong to one logical Session:
+Select the artifact format with `--runtime`, then supply the native JSONL files that belong to one logical Session:
 
 ```bash
-agent-session-facts session inspect --runtime <codex|pi|claude> ARTIFACT...
+agent-session-facts --runtime <codex|pi|claude> ARTIFACT...
 ```
 
 The command reconstructs the Session, normalizes shared facts, preserves runtime-native details, and writes one compact JSON report to stdout. Save it directly when another program will consume it:
 
 ```bash
-agent-session-facts session inspect --runtime pi session.jsonl > report.json
+agent-session-facts --runtime pi session.jsonl > report.json
 ```
 
 Diagnostics are one compact JSON error on stderr. Exit status `0` means a report was produced, including a report with `complete: false`; status `1` is an I/O or internal failure, and status `2` is invalid or unsupported input.
@@ -44,7 +44,7 @@ Both values are already included in `input`. If a report says `input: 1000`, `ca
 Supply every on-disk rollout belonging to one native `session_id`:
 
 ```bash
-agent-session-facts session inspect \
+agent-session-facts \
   --runtime codex \
   root-rollout.jsonl \
   child-rollout.jsonl
@@ -57,7 +57,7 @@ Child Thread rollouts repeat inherited parent history. The adapter excludes reco
 Supply exactly one native Pi Session JSONL:
 
 ```bash
-agent-session-facts session inspect --runtime pi session.jsonl
+agent-session-facts --runtime pi session.jsonl
 ```
 
 Pi resumes append to the same file. A `parentSession` is a separately identified fork. Usage and runtime-recorded cost are summed across assistant, tool-result, compaction, and branch-summary entries.
@@ -67,7 +67,7 @@ Pi resumes append to the same file. A `parentSession` is a separately identified
 Supply one root source and every runtime-declared subagent source with the same `sessionId`:
 
 ```bash
-agent-session-facts session inspect \
+agent-session-facts \
   --runtime claude \
   session.jsonl \
   subagents/*.jsonl

@@ -11,46 +11,16 @@ fn binary() -> Command {
 }
 
 #[test]
-fn help_discovers_the_session_inspection_workflow() {
+fn help_documents_the_single_inspection_workflow() {
     let output = binary().arg("--help").output().expect("CLI should start");
     assert!(output.status.success());
     assert!(output.stderr.is_empty());
     let stdout = String::from_utf8(output.stdout).expect("help should be UTF-8");
-    assert!(stdout.contains("session"));
     assert!(stdout.contains("loop outcomes"));
     assert!(stdout.contains("cache-read, cache-write, and reasoning breakdowns"));
     assert!(stdout.contains("tool calls"));
     assert!(stdout.contains("source coverage"));
-    assert!(!stdout.contains("  help     Print this message"));
-    assert!(
-        stdout.contains(
-            "agent-session-facts session inspect --runtime <codex|pi|claude> ARTIFACT..."
-        )
-    );
-}
-
-#[test]
-fn redundant_help_subcommands_are_disabled() {
-    for args in [["help"].as_slice(), ["session", "help"].as_slice()] {
-        let output = binary().args(args).output().expect("CLI should start");
-        assert_eq!(output.status.code(), Some(2));
-        assert!(output.stdout.is_empty());
-        let error: Value =
-            serde_json::from_slice(&output.stderr).expect("stderr should be structured JSON");
-        assert_eq!(error["type"], "agent_session_facts.error");
-        assert_eq!(error["category"], "invalid_input");
-    }
-}
-
-#[test]
-fn inspect_help_documents_the_machine_contract() {
-    let output = binary()
-        .args(["session", "inspect", "--help"])
-        .output()
-        .expect("CLI should start");
-    assert!(output.status.success());
-    assert!(output.stderr.is_empty());
-    let stdout = String::from_utf8(output.stdout).expect("help should be UTF-8");
+    assert!(stdout.contains("Usage: agent-session-facts --runtime <RUNTIME> <ARTIFACT>..."));
     assert!(stdout.contains("Codex   1 to 1024 on-disk rollout JSONL files"));
     assert!(stdout.contains("Pi      Exactly one native Session JSONL file"));
     assert!(stdout.contains("Claude  1 to 1024 JSONL files"));
@@ -63,12 +33,26 @@ fn inspect_help_documents_the_machine_contract() {
     assert!(stdout.contains("complete=false"));
     assert!(stdout.contains("Invalid or unsupported input"));
     assert!(stdout.contains("codex exec --json"));
+    assert!(stdout.contains("agent-session-facts --runtime codex root.jsonl child.jsonl"));
+}
+
+#[test]
+fn subcommands_are_not_accepted() {
+    for argument in ["help", "session", "inspect"] {
+        let output = binary().arg(argument).output().expect("CLI should start");
+        assert_eq!(output.status.code(), Some(2));
+        assert!(output.stdout.is_empty());
+        let error: Value =
+            serde_json::from_slice(&output.stderr).expect("stderr should be structured JSON");
+        assert_eq!(error["type"], "agent_session_facts.error");
+        assert_eq!(error["category"], "invalid_input");
+    }
 }
 
 #[test]
 fn argument_errors_are_one_structured_stderr_object() {
     let output = binary()
-        .args(["session", "inspect", "--runtime", "codex"])
+        .args(["--runtime", "codex"])
         .output()
         .expect("CLI should start");
     assert_eq!(output.status.code(), Some(2));
@@ -80,13 +64,13 @@ fn argument_errors_are_one_structured_stderr_object() {
     assert_eq!(error["category"], "invalid_input");
     let message = error["message"].as_str().expect("message should be text");
     assert_eq!(message.matches("Usage:").count(), 1);
-    assert!(message.contains("agent-session-facts session inspect"));
+    assert!(message.contains("agent-session-facts --runtime"));
 }
 
 #[test]
 fn missing_source_is_a_structured_io_error() {
     let output = binary()
-        .args(["session", "inspect", "--runtime", "codex"])
+        .args(["--runtime", "codex"])
         .arg("/path/that/does/not/exist.jsonl")
         .output()
         .expect("CLI should start");
@@ -166,7 +150,7 @@ fn inspect_emits_one_compact_json_report() {
     fs::write(&rollout, contents).expect("fixture should be written");
 
     let output = binary()
-        .args(["session", "inspect", "--runtime", "codex"])
+        .args(["--runtime", "codex"])
         .arg(&rollout)
         .output()
         .expect("CLI should start");
@@ -222,7 +206,7 @@ fn incomplete_source_still_emits_a_successful_report() {
     fs::write(&rollout, contents).expect("fixture should be written");
 
     let output = binary()
-        .args(["session", "inspect", "--runtime", "codex"])
+        .args(["--runtime", "codex"])
         .arg(&rollout)
         .output()
         .expect("CLI should start");
@@ -252,7 +236,7 @@ fn exec_json_dialect_fails_with_structured_stderr() {
     .expect("fixture should be written");
 
     let output = binary()
-        .args(["session", "inspect", "--runtime", "codex"])
+        .args(["--runtime", "codex"])
         .arg(&rollout)
         .output()
         .expect("CLI should start");
@@ -280,7 +264,7 @@ fn pi_emits_the_uniform_and_runtime_specific_schemas() {
     write_jsonl(&session, &records, true);
 
     let output = binary()
-        .args(["session", "inspect", "--runtime", "pi"])
+        .args(["--runtime", "pi"])
         .arg(&session)
         .output()
         .expect("CLI should start");
@@ -309,7 +293,7 @@ fn claude_emits_the_uniform_and_runtime_specific_schemas() {
     write_jsonl(&session, &records, true);
 
     let output = binary()
-        .args(["session", "inspect", "--runtime", "claude"])
+        .args(["--runtime", "claude"])
         .arg(&session)
         .output()
         .expect("CLI should start");

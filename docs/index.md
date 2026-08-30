@@ -39,7 +39,7 @@ The result is one compact JSON object. Shared facts have the same fields for eve
 ## Typical workflow
 
 ```bash
-agent-session-facts session inspect \
+agent-session-facts \
   --runtime claude \
   session.jsonl \
   subagents/*.jsonl > report.json

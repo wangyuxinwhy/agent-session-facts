@@ -25,15 +25,15 @@ Prebuilt Linux and macOS archives are also attached to the matching [GitHub Rele
 ## Quick start
 
 ```bash
-agent-session-facts session inspect --runtime codex root.jsonl child.jsonl
-agent-session-facts session inspect --runtime pi session.jsonl
-agent-session-facts session inspect --runtime claude session.jsonl subagents/*.jsonl
+agent-session-facts --runtime codex root.jsonl child.jsonl
+agent-session-facts --runtime pi session.jsonl
+agent-session-facts --runtime claude session.jsonl subagents/*.jsonl
 ```
 
 Supply all files that belong to the logical Session. The command writes one compact `agent_session_facts.report` JSON object to stdout, so it can be saved or piped directly:
 
 ```bash
-agent-session-facts session inspect --runtime pi session.jsonl > report.json
+agent-session-facts --runtime pi session.jsonl > report.json
 ```
 
 Diagnostics use one compact `agent_session_facts.error` JSON object on stderr. Exit status 2 denotes invalid or unsupported input, 1 denotes I/O or internal failure, and 0 denotes a produced report. A readable but incomplete artifact set is represented by `complete: false`, not a process error.
