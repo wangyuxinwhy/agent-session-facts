@@ -18,7 +18,7 @@ fn help_discovers_the_session_inspection_workflow() {
     let stdout = String::from_utf8(output.stdout).expect("help should be UTF-8");
     assert!(stdout.contains("session"));
     assert!(stdout.contains("loop outcomes"));
-    assert!(stdout.contains("normalized model usage"));
+    assert!(stdout.contains("cache-read, cache-write, and reasoning breakdowns"));
     assert!(stdout.contains("tool calls"));
     assert!(stdout.contains("source coverage"));
     assert!(
@@ -42,6 +42,10 @@ fn inspect_help_documents_the_machine_contract() {
     assert!(stdout.contains("Claude  1 to 1024 JSONL files"));
     assert!(stdout.contains("agent_session_facts.report"));
     assert!(stdout.contains("agent_session_facts.error"));
+    assert!(stdout.contains("cached       Input tokens read from an existing prompt cache"));
+    assert!(stdout.contains("cache_write  Input tokens newly stored for later requests"));
+    assert!(stdout.contains("Do not add cached or cache_write to input"));
+    assert!(stdout.contains("A null field is unknown; zero is a known zero"));
     assert!(stdout.contains("complete=false"));
     assert!(stdout.contains("Invalid or unsupported input"));
     assert!(stdout.contains("codex exec --json"));
