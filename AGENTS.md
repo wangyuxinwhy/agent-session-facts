@@ -18,4 +18,4 @@ Keep runtime-specific parsing behind explicit adapters. A new adapter must be ju
 
 ## Verification
 
-Before claiming completion, run formatting, all-target tests, Clippy with warnings denied, the declared MSRV check, packaging, and separate-process CLI tests. Validate supported adapters against representative real artifacts, including single-file and multi-rollout Sessions, and independently cross-check accounting when its semantics change.
+Before claiming completion, run formatting, all-target tests, Clippy with warnings denied, the declared MSRV check, packaging, separate-process CLI tests, and `./scripts/test-installer.sh`. Validate supported adapters against representative real artifacts, including single-file and multi-rollout Sessions, and independently cross-check accounting when its semantics change. Keep the README installation command, release archives, checksums, installer platform mapping, `latest` pointer, manifest, and Release workflow as one verified delivery contract.

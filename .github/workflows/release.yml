@@ -66,21 +66,13 @@ jobs:
           targets: ${{ matrix.target }}
       - name: Build release binary
         run: cargo build --release --locked --target "${{ matrix.target }}"
-      - name: Package archive and checksum
-        env:
-          VERSION: ${{ needs.validate.outputs.version }}
-          TARGET: ${{ matrix.target }}
+      - name: Verify and package archive
         run: |
-          set -euo pipefail
-          archive="agent-session-facts-v${VERSION}-${TARGET}.tar.gz"
-          staging="agent-session-facts-v${VERSION}-${TARGET}"
-          mkdir -p "dist/$staging"
-          cp "target/${TARGET}/release/agent-session-facts" "dist/$staging/"
-          cp README.md LICENSE "dist/$staging/"
-          tar -C dist -czf "dist/$archive" "$staging"
-          rm -r "dist/$staging"
-          cd dist
-          shasum -a 256 "$archive" > "$archive.sha256"
+          scripts/package-release.sh \
+            --binary "target/${{ matrix.target }}/release/agent-session-facts" \
+            --target "${{ matrix.target }}" \
+            --output-root dist \
+            --version "${{ needs.validate.outputs.version }}"
       - name: Upload release artifact
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
@@ -95,12 +87,25 @@ jobs:
     permissions:
       contents: write
     steps:
+      - name: Check out release tag
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ needs.validate.outputs.tag }}
       - name: Download release artifacts
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
           pattern: release-*
           path: dist
           merge-multiple: true
+      - name: Assemble and verify installer assets
+        run: |
+          scripts/assemble-release.sh \
+            --dist-root dist \
+            --version "${{ needs.validate.outputs.version }}" \
+            --require-target x86_64-unknown-linux-gnu \
+            --require-target aarch64-unknown-linux-gnu \
+            --require-target x86_64-apple-darwin \
+            --require-target aarch64-apple-darwin
       - name: Create or update GitHub Release
         env:
           GH_TOKEN: ${{ github.token }}
