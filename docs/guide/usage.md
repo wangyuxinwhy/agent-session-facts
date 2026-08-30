@@ -30,6 +30,15 @@ Start with these fields:
 - `uniform.sources`: the exact physical evidence inspected.
 - `runtime_specific`: native accounting and topology details for the selected runtime.
 
+### Cache reads and writes
+
+Inside `uniform.session.usage`, `cached` and `cache_write` describe opposite cache directions:
+
+- `cached`: input tokens served from an existing prompt cache during this request.
+- `cache_write`: input tokens newly stored in the prompt cache for later requests.
+
+Both values are already included in `input`. If a report says `input: 1000`, `cached: 600`, and `cache_write: 200`, the total input is 1000—not 1800. The remaining 200 input tokens were neither read from nor written to cache.
+
 ## Codex
 
 Supply every on-disk rollout belonging to one native `session_id`:

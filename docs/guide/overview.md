@@ -14,7 +14,7 @@ The shared `uniform` view contains facts with the same meaning across supported 
 
 - Session identity, runtime versions, and source coverage.
 - Loop totals and outcomes.
-- Normalized model-token usage.
+- Normalized model-token usage, including cache reads and cache writes as distinct parts of input.
 - Tool-call totals and counts by tool name.
 - Model cost when the runtime recorded it.
 - Exact source paths, byte sizes, record counts, terminal-newline state, and SHA-256 digests.

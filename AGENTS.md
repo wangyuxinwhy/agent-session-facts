@@ -4,6 +4,8 @@
 
 `agent-session-facts` is a self-contained read-only CLI that turns native Agent runtime Session artifacts into auditable execution facts. Its public documentation should explain the reader's problem, inputs, outputs, and supported facts without referring to unrelated systems or project history.
 
+Document every public field in reader terms: state what it measures, what it includes or excludes, how it relates to parent totals, when it can be `null`, and how `null` differs from zero. Do not substitute labels such as "optional subset" for an operational definition.
+
 Keep runtime-specific parsing behind explicit adapters. A new adapter must be justified by real artifacts and must preserve native identities, exact source provenance, incomplete evidence, and unsupported transitions rather than guessing.
 
 ## Rust Implementation

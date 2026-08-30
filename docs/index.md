@@ -28,7 +28,7 @@ features:
 Given the native files for one Agent Session, `agent-session-facts` answers:
 
 - How many outer execution loops completed, failed, were interrupted, or remain open?
-- How many input, cached, cache-write, output, and reasoning tokens were recorded?
+- How much input was processed, how much came from an existing cache, and how much was written for future requests?
 - Which tools were called, and how often?
 - Did the runtime record model cost?
 - Were all runtime-declared child or subagent sources supplied?

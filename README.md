@@ -5,7 +5,7 @@ Turn native Agent Session logs into one auditable JSON report.
 Codex, Pi, and Claude Code record Sessions in different JSONL formats, and one logical Session may be split across root, child, or subagent files. `agent-session-facts` reads those artifacts, reconstructs the Session, and reports:
 
 - Loop outcomes: completed, failed, interrupted, ended without an outcome, and still open.
-- Normalized model usage: input, cached input, cache writes, output, and reasoning tokens.
+- Normalized model usage, including input tokens read from an existing cache versus newly written for future requests.
 - Tool-call totals grouped by tool name.
 - Model cost when the runtime recorded it.
 - Source coverage and exact provenance, including paths, sizes, record counts, and SHA-256 digests.
@@ -75,19 +75,21 @@ The `uniform.session` view describes one runtime-maintained Agent context. `loop
 `uniform.session.usage` uses the shared normalized shape:
 
 ```text
-input        all model input, including cache reads and writes
-cached       optional subset of input
-cache_write  optional subset of input
-output       all model output, including reasoning
-reasoning    optional subset of output
+input        total model input, including cache reads and cache writes
+cached       input tokens read from an existing prompt cache
+cache_write  input tokens newly stored in the prompt cache for later requests
+output       total model output, including reasoning
+reasoning    output tokens used for reasoning
 ```
 
-Missing optional usage is `null`, meaning unknown rather than zero. Uniform fields are always present so consumers see the same JSON shape for every runtime. Total model tokens are derived as `input + output`; no redundant total is stored. `available`, `partial`, and `unavailable` distinguish complete values from known lower-bound values and missing evidence.
+`cached` and `cache_write` are both already included in `input`; do not add them to `input` again. For example, `input: 1000`, `cached: 600`, and `cache_write: 200` means 600 input tokens were reused from cache, 200 were written to cache, and the remaining 200 were ordinary uncached input. The total input is still 1000.
+
+A nullable usage field is `null` when the adapter cannot establish that value from the supported artifacts; `null` means unknown, not zero. Uniform fields are always present so consumers see the same JSON shape for every runtime. Total model tokens are derived as `input + output`; no redundant total is stored. `available` means the values cover the Session, `partial` means they are a known subtotal, and `unavailable` means no supported value was found.
 
 Only facts with the same meaning across all three runtimes enter `uniform`. Runtime-native topology, checkpoint behavior, format versions, and native event kinds remain under the versioned `runtime_specific` view:
 
 - `agent_session_facts.codex@1` preserves Thread lineage, inherited-history ordinals, native tool kinds, and cumulative usage checkpoint deduplication/reset facts.
-- `agent_session_facts.pi@1` preserves the entry tree, Session format version, native stop reasons, one-hour cache writes, and per-response usage/cost accounting.
+- `agent_session_facts.pi@1` preserves the entry tree, Session format version, native stop reasons, tokens written to Pi's one-hour cache tier, and per-response usage/cost accounting.
 - `agent_session_facts.claude@1` preserves root/subagent contexts, the UUID record tree, native tool kinds, and assistant response snapshot deduplication facts.
 
 ## Runtime input and accounting
