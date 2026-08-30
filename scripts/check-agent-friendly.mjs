@@ -28,6 +28,10 @@ for (const page of [
   }
 }
 
+if (index.includes('## Others')) {
+  throw new Error('llms.txt contains unclassified documentation pages');
+}
+
 if (!markdown.startsWith('> For AI agents:')) {
   throw new Error('page Markdown is missing the Agent directive');
 }

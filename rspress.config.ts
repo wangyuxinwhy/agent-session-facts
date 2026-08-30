@@ -19,8 +19,16 @@ export default defineConfig({
       placement: 'title',
     },
     nav: [
-      { text: 'Guide', link: '/guide/installation' },
-      { text: 'Schema', link: '/reference/schema' },
+      {
+        text: 'Guide',
+        link: '/guide/overview',
+        activeMatch: '^/guide/',
+      },
+      {
+        text: 'Schema',
+        link: '/reference/schema',
+        activeMatch: '^/reference/',
+      },
     ],
     sidebar: {
       '/guide/': [
