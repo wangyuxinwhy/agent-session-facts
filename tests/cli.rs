@@ -1,3 +1,4 @@
+use std::collections::BTreeSet;
 use std::fs;
 use std::process::Command;
 
@@ -152,6 +153,7 @@ fn inspect_emits_one_compact_json_report() {
     assert!(output.stdout.ends_with(b"\n"));
     assert!(!output.stdout[..output.stdout.len() - 1].contains(&b'\n'));
     let report: Value = serde_json::from_slice(&output.stdout).expect("stdout should be JSON");
+    assert_uniform_contract(&report);
     assert_eq!(report["type"], "agent_session_facts.report");
     assert_eq!(report["complete"], true);
     assert_eq!(report["uniform"]["schema"], "agent_session_facts.uniform@1");
@@ -205,6 +207,7 @@ fn incomplete_source_still_emits_a_successful_report() {
     assert!(output.status.success());
     assert!(output.stderr.is_empty());
     let report: Value = serde_json::from_slice(&output.stdout).expect("stdout should be JSON");
+    assert_uniform_contract(&report);
     assert_eq!(report["complete"], false);
     assert_eq!(report["uniform"]["session"]["loops"]["open"], 1);
     assert!(
@@ -262,6 +265,7 @@ fn pi_emits_the_uniform_and_runtime_specific_schemas() {
     assert!(output.status.success());
     assert!(output.stderr.is_empty());
     let report: Value = serde_json::from_slice(&output.stdout).expect("stdout should be JSON");
+    assert_uniform_contract(&report);
     assert_eq!(report["runtime"], "pi");
     assert_eq!(report["uniform"]["schema"], "agent_session_facts.uniform@1");
     assert_eq!(
@@ -290,6 +294,7 @@ fn claude_emits_the_uniform_and_runtime_specific_schemas() {
     assert!(output.status.success());
     assert!(output.stderr.is_empty());
     let report: Value = serde_json::from_slice(&output.stdout).expect("stdout should be JSON");
+    assert_uniform_contract(&report);
     assert_eq!(report["runtime"], "claude");
     assert_eq!(report["uniform"]["schema"], "agent_session_facts.uniform@1");
     assert_eq!(
@@ -310,4 +315,97 @@ fn write_jsonl(path: &std::path::Path, records: &[Value], terminal_newline: bool
         contents.push('\n');
     }
     fs::write(path, contents).expect("fixture should be written");
+}
+
+fn assert_uniform_contract(report: &Value) {
+    assert_object_keys(
+        report,
+        &[
+            "complete",
+            "incomplete_reasons",
+            "runtime",
+            "runtime_specific",
+            "schema_version",
+            "type",
+            "uniform",
+        ],
+    );
+    assert_object_keys(&report["uniform"], &["schema", "session", "sources"]);
+    assert_object_keys(
+        &report["uniform"]["session"],
+        &[
+            "items",
+            "loops",
+            "model_cost",
+            "native_id",
+            "runtime_versions",
+            "source_count",
+            "source_coverage",
+            "usage",
+        ],
+    );
+    assert_object_keys(
+        &report["uniform"]["session"]["usage"],
+        &["known_values", "status", "values"],
+    );
+    for field in ["values", "known_values"] {
+        let usage = &report["uniform"]["session"]["usage"][field];
+        if !usage.is_null() {
+            assert_object_keys(
+                usage,
+                &["cache_write", "cached", "input", "output", "reasoning"],
+            );
+        }
+    }
+    assert_object_keys(
+        &report["uniform"]["session"]["source_coverage"],
+        &[
+            "basis",
+            "missing_runtime_declared_child_sessions",
+            "runtime_declared_child_sessions",
+            "status",
+            "supplied_sources",
+        ],
+    );
+    assert_object_keys(
+        &report["uniform"]["session"]["loops"],
+        &[
+            "completed",
+            "ended_without_outcome",
+            "failed",
+            "interrupted",
+            "open",
+            "total",
+        ],
+    );
+    assert_object_keys(&report["uniform"]["session"]["items"], &["agent.tool_call"]);
+    assert_object_keys(
+        &report["uniform"]["session"]["items"]["agent.tool_call"],
+        &["by_name", "total"],
+    );
+    assert_object_keys(
+        &report["uniform"]["session"]["model_cost"],
+        &["amount_usd", "basis", "reason", "status"],
+    );
+    assert_object_keys(&report["runtime_specific"], &["facts", "schema"]);
+    for source in report["uniform"]["sources"]
+        .as_array()
+        .expect("sources should be an array")
+    {
+        assert_object_keys(
+            source,
+            &["bytes", "path", "records", "sha256", "terminal_newline"],
+        );
+    }
+}
+
+fn assert_object_keys(value: &Value, expected: &[&str]) {
+    let actual = value
+        .as_object()
+        .expect("contract value should be an object")
+        .keys()
+        .map(String::as_str)
+        .collect::<BTreeSet<_>>();
+    let expected = expected.iter().copied().collect::<BTreeSet<_>>();
+    assert_eq!(actual, expected);
 }

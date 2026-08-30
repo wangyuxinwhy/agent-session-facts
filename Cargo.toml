@@ -10,7 +10,21 @@ rust-version = "1.95"
 description = "Extract auditable facts from native Agent runtime session artifacts"
 license = "MIT"
 readme = "README.md"
-publish = false
+repository = "https://github.com/wangyuxinwhy/agent-session-facts"
+homepage = "https://wangyuxinwhy.github.io/agent-session-facts/"
+documentation = "https://wangyuxinwhy.github.io/agent-session-facts/"
+keywords = ["agent", "session", "trace", "codex", "claude"]
+categories = ["command-line-utilities", "development-tools"]
+publish = ["crates-io"]
+include = [
+    "/src/**",
+    "/tests/**",
+    "/Cargo.toml",
+    "/Cargo.lock",
+    "/README.md",
+    "/LICENSE",
+    "/rust-toolchain.toml",
+]
 
 [[bin]]
 name = "agent-session-facts"

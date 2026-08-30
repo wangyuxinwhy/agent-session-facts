@@ -2,6 +2,16 @@
 
 `agent-session-facts` extracts auditable execution facts directly from native Codex, Pi, and Claude Code Session JSONL artifacts. It is an independent read-only binary: it does not call RunLab or Trace Index and does not judge task quality.
 
+Documentation: <https://wangyuxinwhy.github.io/agent-session-facts/>
+
+## Installation
+
+```bash
+cargo install agent-session-facts --version 0.1.0 --locked
+```
+
+Prebuilt Linux and macOS archives are also attached to the matching [GitHub Release](https://github.com/wangyuxinwhy/agent-session-facts/releases).
+
 ```bash
 agent-session-facts session inspect --runtime codex root.jsonl child.jsonl
 agent-session-facts session inspect --runtime pi session.jsonl
@@ -54,7 +64,7 @@ output       all model output, including reasoning
 reasoning    optional subset of output
 ```
 
-Missing optional usage is unknown, not zero. Total model tokens are derived as `input + output`; no redundant total is stored. `available`, `partial`, and `unavailable` distinguish complete values from known lower-bound values and missing evidence.
+Missing optional usage is `null`, meaning unknown rather than zero. Uniform fields are always present so consumers see the same JSON shape for every runtime. Total model tokens are derived as `input + output`; no redundant total is stored. `available`, `partial`, and `unavailable` distinguish complete values from known lower-bound values and missing evidence.
 
 Only facts with the same meaning across all three runtimes enter `uniform`. Runtime-native topology, checkpoint behavior, format versions, and native event kinds remain under the versioned `runtime_specific` view:
 

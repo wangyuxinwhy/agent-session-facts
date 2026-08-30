@@ -62,12 +62,9 @@ pub(crate) struct LoopFacts {
 #[derive(Clone, Debug, Default, PartialEq, Eq, Serialize)]
 pub(crate) struct Usage {
     pub(crate) input: u64,
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub(crate) cached: Option<u64>,
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub(crate) cache_write: Option<u64>,
     pub(crate) output: u64,
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub(crate) reasoning: Option<u64>,
 }
 
@@ -82,9 +79,7 @@ pub(crate) enum AvailabilityStatus {
 #[derive(Clone, Debug, Serialize)]
 pub(crate) struct UsageFacts {
     pub(crate) status: AvailabilityStatus,
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub(crate) values: Option<Usage>,
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub(crate) known_values: Option<Usage>,
 }
 
@@ -103,11 +98,8 @@ pub(crate) struct ToolCallFacts {
 #[derive(Debug, Serialize)]
 pub(crate) struct ModelCostFacts {
     pub(crate) status: AvailabilityStatus,
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub(crate) amount_usd: Option<f64>,
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub(crate) basis: Option<&'static str>,
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub(crate) reason: Option<&'static str>,
 }
 

@@ -1,0 +1,19 @@
+{
+  "name": "agent-session-facts-docs",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Documentation site for agent-session-facts",
+  "scripts": {
+    "docs:dev": "rspress dev",
+    "docs:build": "rspress build",
+    "docs:check-agent": "node scripts/check-agent-friendly.mjs",
+    "docs:preview": "rspress preview"
+  },
+  "engines": {
+    "node": "^20.19.0 || >=22.12.0"
+  },
+  "devDependencies": {
+    "@rspress/core": "2.0.21"
+  }
+}
