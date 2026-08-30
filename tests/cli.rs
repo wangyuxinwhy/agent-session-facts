@@ -17,6 +17,10 @@ fn help_discovers_the_session_inspection_workflow() {
     assert!(output.stderr.is_empty());
     let stdout = String::from_utf8(output.stdout).expect("help should be UTF-8");
     assert!(stdout.contains("session"));
+    assert!(stdout.contains("loop outcomes"));
+    assert!(stdout.contains("normalized model usage"));
+    assert!(stdout.contains("tool calls"));
+    assert!(stdout.contains("source coverage"));
     assert!(
         stdout.contains(
             "agent-session-facts session inspect --runtime <codex|pi|claude> ARTIFACT..."

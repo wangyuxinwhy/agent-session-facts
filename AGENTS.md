@@ -2,7 +2,7 @@
 
 ## Product Boundary
 
-`agent-session-facts` is an independent read-only CLI that extracts auditable facts from native Agent runtime Session artifacts. It does not belong to RunLab, does not depend on RunLab or Trace Index, and does not judge task quality.
+`agent-session-facts` is a self-contained read-only CLI that turns native Agent runtime Session artifacts into auditable execution facts. Its public documentation should explain the reader's problem, inputs, outputs, and supported facts without referring to unrelated systems or project history.
 
 Keep runtime-specific parsing behind explicit adapters. A new adapter must be justified by real artifacts and must preserve native identities, exact source provenance, incomplete evidence, and unsupported transitions rather than guessing.
 

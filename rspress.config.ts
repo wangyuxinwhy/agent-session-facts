@@ -8,7 +8,7 @@ export default defineConfig({
   llms: true,
   title: 'agent-session-facts',
   description:
-    'Auditable Session, Loop, usage, and tool-call facts from Codex, Pi, and Claude Code artifacts.',
+    'Turn Codex, Pi, and Claude Code Session logs into auditable loop, model-usage, tool-call, cost, and source-coverage facts.',
   route: {
     cleanUrls: true,
   },
@@ -27,6 +27,7 @@ export default defineConfig({
         {
           text: 'Guide',
           items: [
+            { text: 'Overview', link: '/guide/overview' },
             { text: 'Installation', link: '/guide/installation' },
             { text: 'Usage', link: '/guide/usage' },
           ],

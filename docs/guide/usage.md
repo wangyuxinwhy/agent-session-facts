@@ -4,13 +4,31 @@ description: Inspect Codex, Pi, and Claude Code Session artifacts with agent-ses
 
 # Usage
 
-The command reads explicit JSONL artifacts and writes one compact JSON report to stdout:
+Choose the runtime adapter, then supply the native JSONL files that belong to one logical Session:
 
 ```bash
 agent-session-facts session inspect --runtime <codex|pi|claude> ARTIFACT...
 ```
 
+The command reconstructs the Session, normalizes shared facts, preserves runtime-native details, and writes one compact JSON report to stdout. Save it directly when another program will consume it:
+
+```bash
+agent-session-facts session inspect --runtime pi session.jsonl > report.json
+```
+
 Diagnostics are one compact JSON error on stderr. Exit status `0` means a report was produced, including a report with `complete: false`; status `1` is an I/O or internal failure, and status `2` is invalid or unsupported input.
+
+## Reading the result
+
+Start with these fields:
+
+- `complete` and `incomplete_reasons`: whether the supplied artifacts support a complete report.
+- `uniform.session.loops`: execution-cycle totals and outcomes.
+- `uniform.session.usage`: normalized model-token usage.
+- `uniform.session.items["agent.tool_call"]`: total tool calls and counts by tool name.
+- `uniform.session.model_cost`: runtime-recorded cost or the reason it is unavailable.
+- `uniform.sources`: the exact physical evidence inspected.
+- `runtime_specific`: native accounting and topology details for the selected runtime.
 
 ## Codex
 

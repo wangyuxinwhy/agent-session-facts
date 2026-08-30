@@ -4,7 +4,7 @@ description: Versioned JSON output schema shared by Codex, Pi, and Claude Code S
 
 # Output Schema
 
-Every successful inspection emits one `agent_session_facts.report` JSON object. The report has two independently versioned views:
+Every successful inspection emits one `agent_session_facts.report` JSON object for one logical Agent Session. This is the stable machine-readable contract for scripts and other consumers. The report has two independently versioned views:
 
 - `uniform` contains facts with the same meaning across Codex, Pi, and Claude Code.
 - `runtime_specific` preserves native topology and accounting details that cannot be normalized without losing meaning.

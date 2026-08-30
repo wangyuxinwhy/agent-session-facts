@@ -18,6 +18,7 @@ const markdown = readFileSync('doc_build/guide/installation.md', 'utf8');
 const html = readFileSync('doc_build/guide/installation.html', 'utf8');
 
 for (const page of [
+  'guide/overview.md',
   'guide/installation.md',
   'guide/usage.md',
   'reference/schema.md',

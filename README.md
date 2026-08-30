@@ -1,6 +1,16 @@
 # agent-session-facts
 
-`agent-session-facts` extracts auditable execution facts directly from native Codex, Pi, and Claude Code Session JSONL artifacts. It is an independent read-only binary: it does not call RunLab or Trace Index and does not judge task quality.
+Turn native Agent Session logs into one auditable JSON report.
+
+Codex, Pi, and Claude Code record Sessions in different JSONL formats, and one logical Session may be split across root, child, or subagent files. `agent-session-facts` reads those artifacts, reconstructs the Session, and reports:
+
+- Loop outcomes: completed, failed, interrupted, ended without an outcome, and still open.
+- Normalized model usage: input, cached input, cache writes, output, and reasoning tokens.
+- Tool-call totals grouped by tool name.
+- Model cost when the runtime recorded it.
+- Source coverage and exact provenance, including paths, sizes, record counts, and SHA-256 digests.
+
+Use it to inspect one Agent run, compare the same facts across runtimes, or feed stable Session facts into automation without maintaining three runtime-specific parsers. The command only reads the artifacts you provide and preserves unknown or incomplete evidence instead of estimating it.
 
 Documentation: <https://wangyuxinwhy.github.io/agent-session-facts/>
 
@@ -12,13 +22,21 @@ cargo install agent-session-facts --version 0.1.0 --locked
 
 Prebuilt Linux and macOS archives are also attached to the matching [GitHub Release](https://github.com/wangyuxinwhy/agent-session-facts/releases).
 
+## Quick start
+
 ```bash
 agent-session-facts session inspect --runtime codex root.jsonl child.jsonl
 agent-session-facts session inspect --runtime pi session.jsonl
 agent-session-facts session inspect --runtime claude session.jsonl subagents/*.jsonl
 ```
 
-Stdout contains one compact `agent_session_facts.report` JSON object. Diagnostics use one compact `agent_session_facts.error` JSON object on stderr. Exit status 2 denotes invalid or unsupported input, 1 denotes I/O or internal failure, and 0 denotes a produced report. A readable but incomplete artifact set is represented by `complete: false`, not a process error.
+Supply all files that belong to the logical Session. The command writes one compact `agent_session_facts.report` JSON object to stdout, so it can be saved or piped directly:
+
+```bash
+agent-session-facts session inspect --runtime pi session.jsonl > report.json
+```
+
+Diagnostics use one compact `agent_session_facts.error` JSON object on stderr. Exit status 2 denotes invalid or unsupported input, 1 denotes I/O or internal failure, and 0 denotes a produced report. A readable but incomplete artifact set is represented by `complete: false`, not a process error.
 
 ## Two views, one report
 
@@ -52,7 +70,7 @@ Every runtime emits the same envelope and the same `uniform` shape:
 }
 ```
 
-The uniform terminology follows the useful part of Trace Index's cross-runtime mental model: a runtime-maintained `session` contains outer execution `loops`, relevant program `items`, and is supported by physical `sources`. This tool does not reproduce Trace Index's Record, Blob, semantic-text, indexing, or search contracts because the Session accounting task does not need them.
+The `uniform.session` view describes one runtime-maintained Agent context. `loops` are its outer execution cycles, `items` are counted facts such as tool calls, and `sources` identify the physical files that support the report.
 
 `uniform.session.usage` uses the shared normalized shape:
 

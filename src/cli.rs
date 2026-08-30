@@ -17,7 +17,7 @@ use crate::pi;
     name = "agent-session-facts",
     version,
     about = "Extract auditable facts from native Agent runtime sessions",
-    long_about = "Extract auditable facts from native Agent runtime session artifacts.\n\nThis binary reads artifacts directly. It does not depend on RunLab or Trace Index and does not judge task quality.",
+    long_about = "Turn native Agent Session artifacts into one auditable JSON report.\n\nReconstruct a Codex, Pi, or Claude Code Session and report loop outcomes, normalized model usage, tool calls, runtime-recorded cost, source coverage, and exact provenance. Input artifacts are never modified.",
     after_long_help = "WORKFLOW:\n  agent-session-facts session inspect --runtime <codex|pi|claude> ARTIFACT...\n\nRun 'agent-session-facts session inspect --help' for the accepted input, JSON output, completeness, and exit-status contracts."
 )]
 struct Cli {
