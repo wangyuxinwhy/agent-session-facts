@@ -12,12 +12,12 @@ Codex, Pi, and Claude Code record Sessions in different JSONL formats, and one l
 
 Use it to inspect one Agent run, compare the same facts across runtimes, or feed stable Session facts into automation without maintaining three runtime-specific parsers. The command only reads the artifacts you provide and preserves unknown or incomplete evidence instead of estimating it.
 
-Documentation: <https://wangyuxinwhy.github.io/agent-session-facts/>
+[Documentation](https://wangyuxinwhy.github.io/agent-session-facts/)
 
 ## Installation
 
 ```bash
-cargo install agent-session-facts --version 0.1.0 --locked
+cargo install agent-session-facts --version 0.1.1 --locked
 ```
 
 Prebuilt Linux and macOS archives are also attached to the matching [GitHub Release](https://github.com/wangyuxinwhy/agent-session-facts/releases).

@@ -1,6 +1,6 @@
 {
   "name": "agent-session-facts-docs",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "type": "module",
   "description": "Documentation site for agent-session-facts",
