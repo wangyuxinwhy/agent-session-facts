@@ -24,8 +24,6 @@ The default destination is `~/.local/bin/agent-session-facts`. The installer nev
 
 The installer detects these platforms:
 
-Each `vX.Y.Z` GitHub Release contains archives for:
-
 | Platform | Rust target |
 |---|---|
 | Linux x86_64 | `x86_64-unknown-linux-gnu` |
